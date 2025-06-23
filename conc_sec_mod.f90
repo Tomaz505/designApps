@@ -3,7 +3,7 @@ MODULE conc_sec_mod
         implicit none
 
         private
-        public tri_area, tri_2nd_area, tri_1st_area, plane_koeff
+        public tri_area, tri_2nd_area, tri_1st_area, plane_koeff, conc_sigma1, conc_sigma2, reb_sigma
 
         integer, parameter :: dp = selected_real_kind(15,307)
         
@@ -107,7 +107,8 @@ MODULE conc_sec_mod
         FUNCTION reb_sigma(ei,fy,E,K) result(sigma)
                 real(dp), intent (in) :: ei,fy,E,K
                 real(dp) :: sigma
-
+                ! fy>0
+                ! samo ei spreminja predznak
                 IF (abs(ei)>fy/E)
                         sigma = (fy+K*(abs(ei)-fy/E))*sign(ei)
                 ELSE

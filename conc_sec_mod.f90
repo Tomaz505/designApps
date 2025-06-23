@@ -32,33 +32,34 @@ MODULE conc_sec_mod
                 real(dp), intent (in) :: x(3),y(3)
                 real(dp) :: area
                 
-                area = x(2)*(y(3)-y(1))-x(3)*(y(2)-y(1)-x(1)*(y(3)-y(2)
+                area = x(2)*(y(3)-y(1))-x(3)*(y(2)-y(1)-x(1)*(y(3)-y(2)))
                 area = area/2
         END FUNCTION tri_area
 
         FUNCTION tri_2nd_area(x,y) result(area_2)
                 real(dp), intent (in) :: x(3),y(3)
-                real(dp) :: area_2 = 0.0_dp
+                real(dp) :: area_2
                 integer :: i1, imod
+                area_2 = 0.0_dp
                 !Računa se okoli 1. koordinate,
                 !ki jo predstavlja 1. argument.
                 !Za drugo smeri zamenjaj argumenta
                 DO i1 = 1,3
-                        imod = mod(i1+1,3)
-                        area_2 = area_2 +
-                        (x(i1)*y(imod)-y(i1)*x(imod))*(y(imod)**2+y(imod)*y(i1)+y(i1)**2)/12
+                        imod = mod(i1,3)+1
+                        area_2 = area_2 + (x(i1)*y(imod)-y(i1)*x(imod))*(y(imod)**2+y(imod)*y(i1)+y(i1)**2)/12
                 END DO
         END FUNCTION tri_2nd_area
 
         FUNCTION tri_1st_area(x,y) result(area_1)
                 real(dp), intent(in) :: x(3),y(3)
-                real(dp) :: area_1 = 0.0_dp
+                real(dp) :: area_1 
                 integer :: i1,imod
+                area_1 = 0.0_dp
                 !Računa se okoli 1. koordinate,
                 !ki jo predstavlja 1. argument.
                 !Za drugo smeri zamenjaj argumenta
                 DO i1 = 1,3
-                        imod = mod(i1+1,3)
+                        imod = mod(i1,3)+1
                 area_1 = area_1+(x(i1)-x(imod))*(y(i1)**2+y(i1)*y(imod)+y(imod)**2)/6
                 END DO
         END FUNCTION tri_1st_area
@@ -88,7 +89,7 @@ MODULE conc_sec_mod
         END FUNCTION conc_sigma1
 
         FUNCTION conc_sigma2(ei,e2,eu2,fc,n) result(sigma)
-                real(dp), intent (in) :: ei,e2,eu2,fc
+                real(dp), intent (in) :: ei,e2,eu2,fc,n
                 real(dp) :: sigma
                 ! Tlačne deformacije so negativne
                 ! Tlačne napetosti so negativne
@@ -102,15 +103,15 @@ MODULE conc_sec_mod
                 ELSE 
                         sigma = fc*(1-(1-ei/e2)**n)
                 END IF
-        END FUNCTION conc_sigma_2
+        END FUNCTION conc_sigma2
 
         FUNCTION reb_sigma(ei,fy,E,K) result(sigma)
                 real(dp), intent (in) :: ei,fy,E,K
                 real(dp) :: sigma
                 ! fy>0
                 ! samo ei spreminja predznak
-                IF (abs(ei)>fy/E)
-                        sigma = (fy+K*(abs(ei)-fy/E))*sign(ei)
+                IF (abs(ei)>fy/E) THEN
+                        sigma = (fy+K*(abs(ei)-fy/E))*sign(1.0_dp,ei)
                 ELSE
                         sigma = ei*E
                 END IF
